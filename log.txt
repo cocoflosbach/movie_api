@@ -16,3 +16,15 @@ Timestamp: Wed Aug 18 2021 23:31:26 GMT+0100 (West Africa Standard Time)
 URL: /favicon.ico
 Timestamp: Wed Aug 18 2021 23:31:26 GMT+0100 (West Africa Standard Time)
 
+URL: /
+Timestamp: Thu Aug 19 2021 00:54:36 GMT+0100 (West Africa Standard Time)
+
+URL: /favicon.ico
+Timestamp: Thu Aug 19 2021 00:54:36 GMT+0100 (West Africa Standard Time)
+
+URL: /documentation
+Timestamp: Thu Aug 19 2021 00:54:52 GMT+0100 (West Africa Standard Time)
+
+URL: /favicon.ico
+Timestamp: Thu Aug 19 2021 00:54:52 GMT+0100 (West Africa Standard Time)
+
