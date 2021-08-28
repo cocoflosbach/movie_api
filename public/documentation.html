@@ -6,6 +6,7 @@
   </head>
   <body>
     <h1>Documentation page</h1>
+
     <p>
       "This is a REST API for an application called “myFlix” that interacts with
       a database that stores data about different movies. The target audience
@@ -21,5 +22,148 @@
       (CRUD) will be used to retrieve data from your database and store that
       data in a non-relational way.
     </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Business Logic</th>
+          <th>URL</th>
+          <th>HTTP Method</th>
+          <th>Request body data format</th>
+          <th>Response body data format</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Get a list of all movies</td>
+          <td>/movies</td>
+          <td>GET</td>
+          <td>None</td>
+          <td>A JSON object holding data about all movies</td>
+        </tr>
+
+        <tr>
+          <td>Get data about a single movie by title</td>
+          <td>/movies/[title]</td>
+          <td>GET</td>
+          <td>None</td>
+          <td>
+            A JSON object holding data about a single movie,<br />
+            Example:<br />
+            {<br />
+            description: 1, "The Notebookc"<br />
+            genre: "Romance",<br />
+            Director: Nick Cassavetes<br />
+            url: <br />
+            }
+          </td>
+        </tr>
+
+        <tr>
+          <td>Get data about a Genre</td>
+          <td>/movies/[title]/[genre]</td>
+          <td>GET</td>
+          <td>None</td>
+          <td>
+            A JSON object holding data about all the movies in specified genre
+          </td>
+        </tr>
+
+        <tr>
+          <td>Get data about a Director</td>
+          <td>/movies/[directors]/[name]</td>
+          <td>GET</td>
+          <td>None</td>
+          <td>
+            A JSON object holding data about a single director,<br />
+            Example:<br />
+            {<br />
+            bio: Nick Cassavetes,<br />
+            birth year: May 21, 1959<br />
+            death year: N/A<br />
+            }
+          </td>
+        </tr>
+
+        <tr>
+          <td>Add a new user</td>
+          <td>/movies/[username]</td>
+          <td>POST</td>
+          <td>
+            A JSON object holding data about a user to add,<br />
+            Example:<br />
+            {<br />
+            Username: coco,<br />
+            email: coco@123.abc,<br />
+            }
+          </td>
+          <td>
+            A JSON object holding data about a user sucessfully added,<br />
+            Example:<br />
+            {<br />
+            Username: coco,<br />
+            email: coco@123.abc,<br />
+            }
+          </td>
+        </tr>
+
+        <tr>
+          <td>Update a user's info</td>
+          <td>/movies/[username]</td>
+          <td>PUT</td>
+          <td>None</td>
+          <td>
+            A text message indicating whether the user information that was
+            updated
+          </td>
+        </tr>
+
+        <tr>
+          <td>Add movie to user favorite list</td>
+          <td>/movies/[username]/[favorites]</td>
+          <td>POST</td>
+          <td>
+            A JSON object holding data about a movie to be added,<br />
+            Example:<br />
+            {<br />
+            description: 1, "The Notebookc"<br />
+            genre: "Romance",<br />
+            Director: Nick Cassavetes<br />
+            url: <br />
+            }
+          </td>
+          <td>
+            A JSON object holding data about a movie that was added,<br />
+            Example:<br />
+            {<br />
+            description: 1, "The Notebookc"<br />
+            genre: "Romance",<br />
+            Director: Nick Cassavetes<br />
+            url: <br />
+            }
+          </td>
+        </tr>
+
+        <tr>
+          <td>Remove movie from user favorite list</td>
+          <td>/movies/[username]/[favorites]</td>
+          <td>DELETE</td>
+          <td>None</td>
+          <td>
+            A text message indicating whether the movie was successfully removed
+          </td>
+        </tr>
+
+        <tr>
+          <td>Remove a user</td>
+          <td>/movies/[username]</td>
+          <td>DELETE</td>
+          <td>None</td>
+          <td>
+            A text message indicating whether the user was successfully removed
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </body>
 </html>
