@@ -13,7 +13,7 @@ app.use(express.static("public"));
 let topMovies = [
   {
     id: "1",
-    title: "The Notebook",
+    title: "Notebook",
     year: "2004",
     genre: "Romance"
   },
@@ -79,6 +79,61 @@ app.get("/movies", (req, res) => {
 
 app.get("/", (req, res) => {
   res.send("Welcome to the MyFlix app API!");
+});
+
+/*app.get('/students', (req, res) => {
+   res.send('Successful GET request returning data on all the students');
+});*/
+
+app.post("/movies", (req, res) => {
+  let newMovie = req.body;
+
+  if (!newMovie.title) {
+    const message = "Movie data missing in request body";
+    res.status(400).send(message);
+  } else {
+    newMovie.id = uuid.v4();
+    topMovies.push(newMovie);
+    res.status(201).send(newMovie);
+  }
+});
+
+app.get("/movies/:title", (req, res) => {
+  res.json(
+    topMovies.find(movie => {
+      return movie.title === req.params.title;
+    })
+  );
+});
+
+app.get("/movies/:title/:genre", (req, res) => {
+  res.send("Successful GET request returning data on a genre");
+});
+
+app.get("/movies/:directors:/:name:", (req, res) => {
+  res.send("Successful GET request returning data on a director");
+});
+
+app.post("/movies/username", (req, res) => {
+  res.send("Successful POST request adding a new user");
+});
+
+app.put("/movies/username", (req, res) => {
+  res.send("Successful PUT request updating data on an existing user");
+});
+
+app.post("/movies/username/favorites", (req, res) => {
+  res.send("Successful POST request adding new movie to user favorites list");
+});
+
+app.delete("/movies/username/favorites", (req, res) => {
+  res.send(
+    "Successful DELETE request removing a movie from user favorites list"
+  );
+});
+
+app.delete("/movies/username", (req, res) => {
+  res.send("Successful DELETE request removing a user");
 });
 
 app.use((err, req, res, next) => {
