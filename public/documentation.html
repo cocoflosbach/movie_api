@@ -61,7 +61,7 @@
 
         <tr>
           <td>Get data about a Genre</td>
-          <td>/movies/[title]/[genre]</td>
+          <td>/movies/[genre]</td>
           <td>GET</td>
           <td>None</td>
           <td>
@@ -71,7 +71,7 @@
 
         <tr>
           <td>Get data about a Director</td>
-          <td>/movies/[directors]/[name]</td>
+          <td>/movies/[directors]</td>
           <td>GET</td>
           <td>None</td>
           <td>
@@ -87,7 +87,7 @@
 
         <tr>
           <td>Add a new user</td>
-          <td>/movies/[username]</td>
+          <td>/users]</td>
           <td>POST</td>
           <td>
             A JSON object holding data about a user to add,<br />
@@ -109,7 +109,7 @@
 
         <tr>
           <td>Update a user's info</td>
-          <td>/movies/[username]</td>
+          <td>/users/[username]</td>
           <td>PUT</td>
           <td>None</td>
           <td>
@@ -120,7 +120,7 @@
 
         <tr>
           <td>Add movie to user favorite list</td>
-          <td>/movies/[username]/[favorites]</td>
+          <td>/users/[favorites]</td>
           <td>POST</td>
           <td>
             A JSON object holding data about a movie to be added,<br />
@@ -146,7 +146,7 @@
 
         <tr>
           <td>Remove movie from user favorite list</td>
-          <td>/movies/[username]/[favorites]</td>
+          <td>/users/[favorites]</td>
           <td>DELETE</td>
           <td>None</td>
           <td>
@@ -156,7 +156,7 @@
 
         <tr>
           <td>Remove a user</td>
-          <td>/movies/[username]</td>
+          <td>/users/[username]</td>
           <td>DELETE</td>
           <td>None</td>
           <td>
