@@ -85,8 +85,16 @@ let topMovies = [
   }
 ];
 
+//Get a list of all movies
 app.get("/movies", (req, res) => {
-  res.json(topMovies);
+  Movies.find()
+    .then(movies => {
+      res.status(201).json(movies);
+    })
+    .catch(error => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
 });
 
 app.get("/", (req, res) => {
