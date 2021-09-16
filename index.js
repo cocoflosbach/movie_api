@@ -101,10 +101,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to the MyFlix app API!");
 });
 
-/*app.get('/students', (req, res) => {
-   res.send('Successful GET request returning data on all the students');
-});*/
-
+// Add new movie
 app.post("/movies", (req, res) => {
   let newMovie = req.body;
 
@@ -118,12 +115,16 @@ app.post("/movies", (req, res) => {
   }
 });
 
-app.get("/movies/:title", (req, res) => {
-  res.json(
-    topMovies.find(movie => {
-      return movie.title === req.params.title;
+// Get a movie by title
+app.get("/movies/:Title", (req, res) => {
+  Movies.findOne({ Title: req.params.Title })
+    .then(movie => {
+      res.json(movie);
     })
-  );
+    .catch(err => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
 });
 
 app.get("/movies/:genre", (req, res) => {
