@@ -139,8 +139,27 @@ app.get("/genres", (req, res) => {
     });
 });
 
-app.get("/movies/:directors:", (req, res) => {
-  res.send("Successful GET request returning data on a director");
+//Get a list of all directors
+app.get("/directors", (req, res) => {
+  Directors.find()
+    .then(directors => {
+      res.status(201).json(directors);
+    })
+    .catch(error => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+app.get("/directors/:Name", (req, res) => {
+  Directors.findOne({ Name: req.params.Name })
+    .then(director => {
+      res.json(director);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
 });
 
 app.post("/users", (req, res) => {
