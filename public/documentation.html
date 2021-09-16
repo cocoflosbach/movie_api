@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <title>DOCUMENTATION</title>
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <h1>Documentation page</h1>
+    <h1 class="heading">Documentation page</h1>
 
     <p>
       "This is a REST API for an application called “myFlix” that interacts with
@@ -44,24 +45,31 @@
 
         <tr>
           <td>Get data about a single movie by title</td>
-          <td>/movies/[title]</td>
+          <td>/movies/[Title]</td>
           <td>GET</td>
           <td>None</td>
           <td>
             A JSON object holding data about a single movie,<br />
             Example:<br />
             {<br />
-            description: 1, "The Notebookc"<br />
-            genre: "Romance",<br />
-            Director: Nick Cassavetes<br />
-            url: <br />
-            }
+            Title: "Something Evil", Description: "A horror tale about a young
+            couple moving into a Bucks County, Pennsylvania farmhouse, unaware
+            that it is occupied by an unseen presence", Genre: { Name: "Horror",
+            Description: "Horror is a genre of film in which a story is told to
+            deliberately scare or frighten the audience, through suspense,
+            violence or shock" }, Director: { Name: "Steven Spielberg", Bio:
+            "Steven Allan Spielberg is an American film director, producer, and
+            screenwriter. He began his career in the New Hollywood era, and is
+            currently the most commercially successful director", Birth: "1946"
+            }, Imagepath:
+            "https://m.media-amazon.com/images/M/MV5BNDc5NGMxM2QtNzBjZS00OGViLWExMzQtODNhMGNiYzlkZDk0XkEyXkFqcGdeQXVyNjQxODA2ODA@._V1_.jpg",
+            Featured: false } }
           </td>
         </tr>
 
         <tr>
           <td>Get data about a Genre</td>
-          <td>/movies/[genre]</td>
+          <td>/genres/[Name]</td>
           <td>GET</td>
           <td>None</td>
           <td>
@@ -71,39 +79,42 @@
 
         <tr>
           <td>Get data about a Director</td>
-          <td>/movies/[directors]</td>
+          <td>/directors/[Name]</td>
           <td>GET</td>
           <td>None</td>
           <td>
             A JSON object holding data about a single director,<br />
             Example:<br />
             {<br />
-            bio: Nick Cassavetes,<br />
-            birth year: May 21, 1959<br />
-            death year: N/A<br />
-            }
+            "Name": "Nick Cassavetes", <br />
+            "Bio": "Nick Cassavetes Nicholas David Rowland Cassavetes is an
+            American actor, director, and writer", <br />
+            "Birth": "1959", <br />
+            "Films": [ObjectId("613f3c56f001030c8c917805")] }
           </td>
         </tr>
 
         <tr>
           <td>Add a new user</td>
-          <td>/users]</td>
+          <td>/users</td>
           <td>POST</td>
           <td>
             A JSON object holding data about a user to add,<br />
             Example:<br />
             {<br />
-            Username: coco,<br />
-            email: coco@123.abc,<br />
-            }
+            "Username": "cocoboco", <br />
+            "Password": "coco4bocoishere", <br />
+            "Email": "coco@boco.com", <br />
+            "Birthday": "12/12/12" }
           </td>
           <td>
             A JSON object holding data about a user sucessfully added,<br />
             Example:<br />
             {<br />
-            Username: coco,<br />
-            email: coco@123.abc,<br />
-            }
+            "Username": "cocoboco", <br />
+            "Password": "coco4bocoishere", <br />
+            "Email": "coco@boco.com", <br />
+            "Birthday": "12/12/12" } }
           </td>
         </tr>
 
@@ -111,42 +122,44 @@
           <td>Update a user's info</td>
           <td>/users/[username]</td>
           <td>PUT</td>
-          <td>None</td>
           <td>
-            A text message indicating whether the user information that was
-            updated
+            A JSON object holding data about user info to update,<br />
+            Example:<br />
+            {<br />
+            "Email": "coco@boco.com", <br />
+          </td>
+          <td>
+            A JSON object holding data about a user info sucessfully updated,<br />
+            Example:<br />
+            {<br />
+            "Username": "cocoboco", <br />
+            "Password": "coco4bocoishere", <br />
+            "Email": "coco@boco.com", <br />
+            "Birthday": "12/12/12" } }
           </td>
         </tr>
 
         <tr>
           <td>Add movie to user favorite list</td>
-          <td>/users/[favorites]</td>
+          <td>/users/:Username/movies/:[MovieID]</td>
           <td>POST</td>
-          <td>
-            A JSON object holding data about a movie to be added,<br />
-            Example:<br />
-            {<br />
-            description: 1, "The Notebookc"<br />
-            genre: "Romance",<br />
-            Director: Nick Cassavetes<br />
-            url: <br />
-            }
-          </td>
+          <td>None</td>
           <td>
             A JSON object holding data about a movie that was added,<br />
             Example:<br />
             {<br />
-            description: 1, "The Notebookc"<br />
-            genre: "Romance",<br />
-            Director: Nick Cassavetes<br />
-            url: <br />
-            }
+            "_id": "61433de06345a16076908387", <br />
+            "Username": "cocoboco", <br />
+            "Password": "coco4bocoishere", <br />
+            "Email": "cocomo@bocomo.com", <br />
+            "Birthday": "2012-12-11T23:00:00.000Z", <br />
+            "FavoriteMovies": [ "613757e0f001030c8c917801" ], "__v": 0 }
           </td>
         </tr>
 
         <tr>
           <td>Remove movie from user favorite list</td>
-          <td>/users/[favorites]</td>
+          <td>/users/:Username/movies/:[MovieID]</td>
           <td>DELETE</td>
           <td>None</td>
           <td>
