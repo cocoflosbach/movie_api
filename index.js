@@ -190,6 +190,18 @@ app.post("/users", (req, res) => {
     });
 });
 
+// Get all users
+app.get("/users", (req, res) => {
+  Users.find()
+    .then(users => {
+      res.status(201).json(users);
+    })
+    .catch(error => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
 });
 
 app.put("/users/username", (req, res) => {
