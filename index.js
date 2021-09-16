@@ -127,8 +127,16 @@ app.get("/movies/:Title", (req, res) => {
     });
 });
 
-app.get("/movies/:genre", (req, res) => {
-  res.send("Successful GET request returning data on a genre");
+//Get a list of all genres
+app.get("/genres", (req, res) => {
+  Genres.find()
+    .then(genres => {
+      res.status(201).json(genres);
+    })
+    .catch(error => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
 });
 
 app.get("/movies/:directors:", (req, res) => {
