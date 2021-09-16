@@ -268,9 +268,22 @@ app.post("/users/:Username/movies/:MovieID", (req, res) => {
   );
 });
 
-app.delete("/users/favorites", (req, res) => {
-  res.send(
-    "Successful DELETE request removing a movie from user favorites list"
+//Remove a movie to a user's list of favorites
+app.delete("/users/:Username/movies/:MovieID", (req, res) => {
+  Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    {
+      $pull: { FavoriteMovies: req.params.MovieID }
+    },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      } else {
+        res.json(updatedUser);
+      }
+    }
   );
 });
 
