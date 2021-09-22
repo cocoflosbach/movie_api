@@ -23,6 +23,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 let auth = require("./auth")(app);
 
+const cors = require("cors");
+app.use(cors());
+
 const passport = require("passport");
 require("./passport");
 
@@ -130,63 +133,83 @@ app.post(
 );
 
 // Get a movie by title
-app.get("/movies/:Title", (req, res) => {
-  Movies.findOne({ Title: req.params.Title })
-    .then(movie => {
-      res.json(movie);
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/movies/:Title",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Movies.findOne({ Title: req.params.Title })
+      .then(movie => {
+        res.json(movie);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 //Get a list of all genres
-app.get("/genre", (req, res) => {
-  Genre.find()
-    .then(genre => {
-      res.status(201).json(genre);
-    })
-    .catch(error => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/genre",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Genre.find()
+      .then(genre => {
+        res.status(201).json(genre);
+      })
+      .catch(error => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // Get genre by name
-app.get("/genre/:Name", (req, res) => {
-  Genre.findOne({ Name: req.params.Name })
-    .then(genre => {
-      res.json(genre);
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/genre/:Name",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Genre.findOne({ Name: req.params.Name })
+      .then(genre => {
+        res.json(genre);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 //Get a list of all directors
-app.get("/directors", (req, res) => {
-  Directors.find()
-    .then(directors => {
-      res.status(201).json(directors);
-    })
-    .catch(error => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/directors",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Directors.find()
+      .then(directors => {
+        res.status(201).json(directors);
+      })
+      .catch(error => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
-app.get("/directors/:Name", (req, res) => {
-  Directors.findOne({ Name: req.params.Name })
-    .then(director => {
-      res.json(director);
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/directors/:Name",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Directors.findOne({ Name: req.params.Name })
+      .then(director => {
+        res.json(director);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 //Add a user
 app.post("/users", (req, res) => {
@@ -217,28 +240,36 @@ app.post("/users", (req, res) => {
 });
 
 // Get all users
-app.get("/users", (req, res) => {
-  Users.find()
-    .then(users => {
-      res.status(201).json(users);
-    })
-    .catch(error => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/users",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.find()
+      .then(users => {
+        res.status(201).json(users);
+      })
+      .catch(error => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 //Get a user by username
-app.get("/users/:Username", (req, res) => {
-  Users.findOne({ Username: req.params.Username })
-    .then(user => {
-      res.json(user);
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/users/:Username",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.findOne({ Username: req.params.Username })
+      .then(user => {
+        res.json(user);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // Update a user's info, by username
 /* We’ll expect JSON in this format
