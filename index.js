@@ -298,6 +298,7 @@ app.put(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log("body: ", req.body);
     Users.findOneAndUpdate(
       { Username: req.params.Username },
       {
@@ -308,7 +309,7 @@ app.put(
           Birthday: req.body.Birthday
         }
       },
-      { new: true }, // this line makes sure that the updated document is required
+      { new: true }, //ensures the updated document is returned
       (err, updatedUser) => {
         if (err) {
           console.error(err);
