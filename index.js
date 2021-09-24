@@ -122,7 +122,7 @@ app.get("/", (req, res) => {
 });
 
 // Add new movie
-app.post(
+/*app.post(
   "/movies",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
@@ -137,6 +137,49 @@ app.post(
       topMovies.push(newMovie);
       res.status(201).send(newMovie);
     }
+  }
+);*/
+
+app.post(
+  "/movies",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    console.log("body: ", req.body);
+    Movies.findOne({ Title: req.body.Title })
+      .then(movie => {
+        if (movie) {
+          return res.status(400).send(req.body.Title + "already exists");
+        } else {
+          Movies.create({
+            Title: req.body.Title,
+            Description: req.body.Description,
+            Genre: {
+              Name: req.body.Genre.Name,
+              Description: req.body.Genre.Description
+            },
+            Director: {
+              Name: req.body.Director.Name,
+              Bio: req.body.Director.Bio,
+              Birth: req.body.Director.Birth,
+              Death: req.body.Director.Death
+            },
+            Actors: req.body.Actors,
+            ImagePath: req.body.ImagePath,
+            Featured: req.body.Featured
+          })
+            .then(movie => {
+              res.status(201).json(movie);
+            })
+            .catch(error => {
+              console.error(error);
+              res.status(500).send("Error: " + error);
+            });
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        res.status(500).send("Error: " + error);
+      });
   }
 );
 
