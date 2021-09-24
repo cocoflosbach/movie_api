@@ -23,7 +23,7 @@ mongoose.connect(process.env.CONNECTION_URI, {
 const app = express();
 
 app.use(morgan("common"));
-//app.use(bodyParser.json());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 let auth = require("./auth")(app);
@@ -233,6 +233,7 @@ app.post(
     check("Email", "Email does not appear to be valid").isEmail()
   ],
   (req, res) => {
+    //console.log("body: ", req.body);
     // check validation object for errors
     let errors = validationResult(req);
 
