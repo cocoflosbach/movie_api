@@ -24,7 +24,7 @@ const app = express();
 
 app.use(morgan("common"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.urlencoded({ extended: true }));
 
 let auth = require("./auth")(app);
 
@@ -126,6 +126,7 @@ app.post(
   "/movies",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log("body: ", req.body);
     let newMovie = req.body;
 
     if (!newMovie.title) {
