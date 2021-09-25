@@ -59,23 +59,6 @@ app.get("/", (req, res) => {
 });
 
 // Add new movie
-/*app.post(
-  "/movies",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    console.log("body: ", req.body);
-    let newMovie = req.body;
-
-    if (!newMovie.title) {
-      const message = "Movie data missing in request body";
-      res.status(400).send(message);
-    } else {
-      newMovie.id = uuid.v4();
-      topMovies.push(newMovie);
-      res.status(201).send(newMovie);
-    }
-  }
-);*/
 
 app.post(
   "/movies",
@@ -184,6 +167,7 @@ app.get(
   }
 );
 
+//Get director by name
 app.get(
   "/directors/:Name",
   passport.authenticate("jwt", { session: false }),
@@ -295,10 +279,28 @@ app.get(
 }*/
 
 app.put(
-  "/users/:Username",
+  "/users/:Username", [
+    check("Username", "Username is required").isLength({ min: 5 }),
+    check(
+      "Username",
+      "Username contains non alphanumeric characters - not allowed."
+    ).isAlphanumeric(),
+    check("Password", "Password is required")
+      .not()
+      .isEmpty(),
+    check("Email", "Email does not appear to be valid").isEmail()
+  ],
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    console.log("body: ", req.body);
+    //console.log("body: ", req.body);
+    // check validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+  
+    let hashedPassword = Users.hashPassword(req.body.Password);
     Users.findOneAndUpdate(
       { Username: req.params.Username },
       {
