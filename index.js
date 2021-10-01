@@ -10,15 +10,20 @@ const Users = Models.User;
 const Directors = Models.Director;
 const Genre = Models.Genre;
 
-/*mongoose.connect("mongodb://localhost:27017/myFlixDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});*/
-
-mongoose.connect(process.env.CONNECTION_URI, {
+mongoose.connect("mongodb+srv://new-user-01:CocolocoDB4eva@cocoflosbachdb.zynrz.mongodb.net/myFlixDB?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
+
+// mongoose.connect("mongodb://localhost:27017/myFlixDB", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// });
+
+// mongoose.connect(process.env.CONNECTION_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// });
 
 const app = express();
 
@@ -29,18 +34,7 @@ app.use(bodyParser.json());
 let auth = require("./auth")(app);
 
 const cors = require("cors");
-
-let allowedOrigins = ['https://my-flix-2406.herokuapp.com/, http://localhost:1234']
-app.use(cors({
-  origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1) {
-      let message = 'The CORS policy for this application does not allow access from origin ' + origin;
-      return callback(new Error(message ), false);
-    }
-    return callback(null, true),
-  }
-}));
+app.use(cors());
 
 const passport = require("passport");
 require("./passport");
