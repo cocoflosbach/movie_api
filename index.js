@@ -34,7 +34,20 @@ app.use(bodyParser.json());
 let auth = require("./auth")(app);
 
 const cors = require("cors");
-app.use(cors());
+
+// set up whitelist for cors and check against it
+const whiteList = ["https://my-flix-2406.herokuapp.com/movies", "http://localhost:1234/" ]
+const corsOption = {
+  origin: function(origin, callback) {
+    if (whiteList.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
+app.use(cors(corsOption));
 
 const passport = require("passport");
 require("./passport");
