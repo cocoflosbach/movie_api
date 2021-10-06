@@ -34,7 +34,7 @@ app.use(bodyParser.json());
 const cors = require("cors");
 
 // set up whitelist for cors and check against it
-const allowedOrigins = [" "]
+const allowedOrigins = ["*"]
 
 app.use(cors({
   origin: (origin, callback) => {
