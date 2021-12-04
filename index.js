@@ -41,7 +41,7 @@ const allowedOrigins = [
   "https://my-flix-2406.herokuapp.com/movies",
   "http://localhost:1234",
   "https://myflix-2406.netlify.app",
-  "https://myflix-2406.netlify.app",
+  "https://myfunflix.netlify.app",
   "http://localhost:3000",
 ];
 
