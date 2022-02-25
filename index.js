@@ -46,6 +46,17 @@ const allowedOrigins = [
   "http://localhost:4200",
 ];
 
+const allowedMethods = ["GET", "POST", "DELETE", "PUT"];
+const allowedHeaders = [
+  "X-API-KEY",
+  "Origin",
+  "X-Requested-With",
+  "Content-Type",
+  "accept",
+  "Acces-Control-Request-Method",
+  "Authorization",
+];
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -54,6 +65,26 @@ app.use(
         let message =
           "The CORS policy for this application does not allow access from origin" +
           origin;
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    },
+    methods: (methods, callback) => {
+      if (!methods) return callback(null, true);
+      if (allowedMethods.indexOf(methods) === -1) {
+        let message =
+          "The CORS policy for this application does not allow access from method" +
+          methods;
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    },
+    headers: (headers, callback) => {
+      if (!headers) return callback(null, true);
+      if (allowedHeaders.indexOf(headers) === -1) {
+        let message =
+          "The CORS policy for this application does not allow access from header" +
+          headers;
         return callback(new Error(message), false);
       }
       return callback(null, true);
