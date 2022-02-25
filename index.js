@@ -46,7 +46,7 @@ const allowedOrigins = [
   "http://localhost:4200",
 ];
 
-const allowedMethods = ["GET", "POST", "DELETE", "PUT"];
+/* const allowedMethods = ["GET", "POST", "DELETE", "PUT"];
 const allowedHeaders = [
   "X-API-KEY",
   "Origin",
@@ -55,7 +55,7 @@ const allowedHeaders = [
   "accept",
   "Acces-Control-Request-Method",
   "Authorization",
-];
+]; */
 
 app.use(
   cors({
@@ -69,7 +69,7 @@ app.use(
       }
       return callback(null, true);
     },
-    methods: (methods, callback) => {
+    /* methods: (methods, callback) => {
       if (!methods) return callback(null, true);
       if (allowedMethods.indexOf(methods) === -1) {
         let message =
@@ -88,7 +88,7 @@ app.use(
         return callback(new Error(message), false);
       }
       return callback(null, true);
-    },
+    }, */
   })
 );
 
