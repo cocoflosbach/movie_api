@@ -44,6 +44,7 @@ const allowedOrigins = [
   "https://myfunflix.netlify.app",
   "http://localhost:3000",
   "http://localhost:4200",
+  "https://cocoflosbach.github.io/myFunFlix-Angular-client",
 ];
 
 /* const allowedMethods = ["GET", "POST", "DELETE", "PUT"];
