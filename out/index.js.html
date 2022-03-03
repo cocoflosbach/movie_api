@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file The index file creates the Express application, sets up the server and implements routes to Api
+ * endpoints used to access myFunFlix data. Requests made to these endpoints use mongoose models created in the
+ * models file and are authenticated using strategies implemented in the passport file. The connect method
+ * establishes a connection between mongoose and the database, which is hosted on MongoDB Atlas. The
+ * server and endpoints are hosted on Heroku.
+ * @requires mongoose Connects the app to the database and implements data schemas using models.
+ * @requires './models.js' The file where data schemas and models are defined.
+ * @requires express Used to create an express application.
+ * @requires morgan Used to log requests made to the database.
+ * @requires passport Used to create strategies for authenticating and authorising requests to the Api endpoints.
+ * @requires './auth.js' The file that implements the user login route.
+ * @requires cors Used to control origins from which requests to the server can be made.
+ * @requires express-validator Used to perform validation on data provided when creating or updating a user.
+ */
+
+const express = require("express"),
+  morgan = require("morgan"),
+  bodyParser = require("body-parser"),
+  uuid = require("uuid"),
+  mongoose = require("mongoose"),
+  Models = require("./models.js");
+
+const Movies = Models.Movie;
+const Users = Models.User;
+const Directors = Models.Director;
+const Genre = Models.Genre;
+
+mongoose.connect(
+  "mongodb+srv://new-user-01:CocolocoDB4eva@cocoflosbachdb.zynrz.mongodb.net/myFlixDB?retryWrites=true&amp;w=majority",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
+
+// mongoose.connect("mongodb://localhost:27017/myFlixDB", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// });
+
+// mongoose.connect(process.env.CONNECTION_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// });
+
+// Use the express function to create the app
+const app = express();
+
+// Use morgan to log requests
+app.use(morgan("common"));
+app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({ extended: true }));
+
+// Implement cors to allow requests from allowed origins
+const cors = require("cors");
+
+// set up whitelist for cors and check against it
+const allowedOrigins = [
+  "https://my-flix-2406.herokuapp.com/movies",
+  "http://localhost:1234",
+  "https://myflix-2406.netlify.app",
+  "https://myfunflix.netlify.app",
+  "http://localhost:3000",
+  "http://localhost:4200",
+  "https://cocoflosbach.github.io",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        let message =
+          "The CORS policy for this application does not allow access from origin" +
+          origin;
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    },
+  })
+);
+
+let auth = require("./auth")(app);
+
+// call passport file where strategies are implemented
+const passport = require("passport");
+require("./passport");
+
+const { check, validationResult } = require("express-validator");
+
+app.use(express.static("public"));
+
+/**
+ * API endpoints. Example request and response bodies are provided in the documentation.html file.
+ */
+
+/**
+ * All http requests in express take a callback function as a parameter.
+ * The function in turn takes the request and response objects as parameters,
+ * which can then be used to access the data associated with the request.
+ * This callback type will be named: 'requestCallback'.
+ * @callback requestCallback
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+
+/**
+ * Some endpoints are protected. The second parameter of requests made to these endpoints invokes a named
+ * authentication strategy. If authentication succeeds, the authenticated user's token is attached to the request
+ * object and the request callback is called. This callback type will be named: 'authenticationCallback'.
+ * @callback authenticationCallback
+ * @param {string} strategy - the name of the passport strategy used.
+ * @param {Object} config - configuration object. Used here to specify that sessions are not used.
+ */
+
+//Get a list of all movies
+/**
+ * GET request to the ('/movies') endpoint to return a list of all movies.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {array} An array containing individual movie objects.
+ */
+app.get(
+  "/movies",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Movies.find()
+      .then((movies) => {
+        res.status(201).json(movies);
+      })
+      .catch((error) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
+
+/**
+ * GET request to the landing page ('/') endpoint.
+ * @method GET
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {string} The welcome message.
+ */
+app.get("/", (req, res) => {
+  res.send("Welcome to the MyFlix app API!");
+});
+
+// Add new movie
+/**
+ * POST request to the /movies endpoint to create a new movie document in the datatbase.
+ * @method POST
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {Object} An object containing the new movie record.
+ */
+
+app.post(
+  "/movies",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    console.log("body: ", req.body);
+    Movies.findOne({ Title: req.body.Title })
+      .then((movie) => {
+        if (movie) {
+          return res.status(400).send(req.body.Title + "already exists");
+        } else {
+          Movies.create({
+            Title: req.body.Title,
+            Description: req.body.Description,
+            Genre: {
+              Name: req.body.Genre.Name,
+              Description: req.body.Genre.Description,
+            },
+            Director: {
+              Name: req.body.Director.Name,
+              Bio: req.body.Director.Bio,
+              Birth: req.body.Director.Birth,
+              Death: req.body.Director.Death,
+            },
+            Actors: req.body.Actors,
+            ImagePath: req.body.ImagePath,
+            Featured: req.body.Featured,
+          })
+            .then((movie) => {
+              res.status(201).json(movie);
+            })
+            .catch((error) => {
+              console.error(error);
+              res.status(500).send("Error: " + error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send("Error: " + error);
+      });
+  }
+);
+
+// Get a movie by title
+/**
+ * GET request to the enpoint ('/movies/:Title') to return a movie by Title.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {object} The specified movie record in the database.
+ */
+app.get(
+  "/movies/:Title",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Movies.findOne({ Title: req.params.Title })
+      .then((movie) => {
+        res.json(movie);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
+
+//Get a list of all genres
+/**
+ * GET request to the ('/genre') endpoint.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {array} An array of objects listing genre names and descriptions.
+ */
+app.get(
+  "/genre",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Genre.find()
+      .then((genre) => {
+        res.status(201).json(genre);
+      })
+      .catch((error) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
+
+// Get genre by name
+/**
+ * GET request to the ('/genre/:Name') endpoint to get one particular genre by name.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {object} An object listing the specified genre name and description.
+ */
+app.get(
+  "/genre/:Name",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Genre.findOne({ Name: req.params.Name })
+      .then((genre) => {
+        res.json(genre);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
+
+//Get a list of all directors
+/**
+ * GET request to the ('/directors') endpoint.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {array} An array of objects listing director names and Bio desciptions.
+ */
+app.get(
+  "/directors",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Directors.find()
+      .then((directors) => {
+        res.status(201).json(directors);
+      })
+      .catch((error) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
+
+//Get director by name
+/**
+ * GET request to the ('/directors/:Name') endpoint to get one particular genre by name.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {object} An object listing the specified director's name and bio.
+ */
+app.get(
+  "/directors/:Name",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Directors.findOne({ Name: req.params.Name })
+      .then((director) => {
+        res.json(director);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
+
+//Add a user
+// Add new movie
+/**
+ * POST request to the /users endpoint to create a new user document in the datatbase.
+ * @method POST
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {Object} An object containing the new user record.
+ */
+app.post(
+  "/users",
+  [
+    check("Username", "Username is required").isLength({ min: 5 }),
+    check(
+      "Username",
+      "Username contains non alphanumeric characters - not allowed."
+    ).isAlphanumeric(),
+    check("Password", "Password is required").not().isEmpty(),
+    check("Email", "Email does not appear to be valid").isEmail(),
+  ],
+  (req, res) => {
+    //console.log("body: ", req.body);
+    // check validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    let hashedPassword = Users.hashPassword(req.body.Password);
+    Users.findOne({ Username: req.body.Username })
+      .then((user) => {
+        if (user) {
+          return res.status(400).send(req.body.Username + "already exists");
+        } else {
+          Users.create({
+            Username: req.body.Username,
+            Password: hashedPassword,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday,
+          })
+            .then((user) => {
+              res.status(201).json(user);
+            })
+            .catch((error) => {
+              console.error(error);
+              res.status(500).send("Error: " + error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send("Error: " + error);
+      });
+  }
+);
+
+// Get all users
+/**
+ * GET request to the ('/users') endpoint to return a list of all users.
+ * @method GET
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {array} An array containing individual user objects.
+ */
+app.get(
+  "/users",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.find()
+      .then((users) => {
+        res.status(201).json(users);
+      })
+      .catch((error) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
+
+//Get a user by username
+/**
+ * GET request to the ('/users/:Username') endpoint to get one particular user by username.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {object} An object listing the specified user's information.
+ */
+app.get(
+  "/users/:Username",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.findOne({ Username: req.params.Username })
+      .then((user) => {
+        res.json(user);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
+
+/**
+ * PUT request to the /users/:Username endpoint to update the user's details.
+ * @method PUT
+ * @param {string} URL
+ * @example /users/testuser104
+ * @param {object} validationChain Series of checks that validate specified fields in the request body.
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {Object} An object containing the updated user record.
+ */
+app.put(
+  "/users/:Username",
+  [
+    check("Username", "Username is required").isLength({ min: 5 }),
+    check(
+      "Username",
+      "Username contains non alphanumeric characters - not allowed."
+    ).isAlphanumeric(),
+    check("Password", "Password is required").not().isEmpty(),
+    check("Email", "Email does not appear to be valid").isEmail(),
+  ],
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //console.log("body: ", req.body);
+    // check validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    let hashedPassword = Users.hashPassword(req.body.Password);
+    Users.findOneAndUpdate(
+      { Username: req.params.Username },
+      {
+        $set: {
+          Username: req.body.Username,
+          Password: hashedPassword,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday,
+        },
+      },
+      { new: true }, //ensures the updated document is returned
+      (err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Error: " + err);
+        } else {
+          res.json(updatedUser);
+        }
+      }
+    );
+  }
+);
+
+//Add a movie to a user's list of favorites
+/**
+ * POST request to the /users/:Username/movies/:MovieID endpoint
+ * to add a movie to a user's list of Favorite movies.
+ * @method PUT
+ * @param {string} URL
+ * @example /users/testuser104/movies/60a110a28e923350a5340b06
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {Object} An array with the user's updated favourite movies.
+ */
+app.post(
+  "/users/:Username/movies/:MovieID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.findOneAndUpdate(
+      { Username: req.params.Username },
+      {
+        $push: { FavoriteMovies: req.params.MovieID },
+      },
+      { new: true }, // This line makes sure that the updated document is returned
+      (err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Error: " + err);
+        } else {
+          res.json(updatedUser);
+        }
+      }
+    );
+  }
+);
+
+//Remove a movie from a user's list of favorites
+/**
+ * DELETE request to the /users/:Username/movies/:MovieID endpoint to
+ * remove a movie from a user's list of Favorite movies.
+ * @method DELETE
+ * @param {string} URL
+ * @example /users/testuser104/movies/60a110a28e923350a5340b06
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {string} An array with the user's updated favourite movies.
+ */
+app.delete(
+  "/users/:Username/movies/:MovieID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.findOneAndUpdate(
+      { Username: req.params.Username },
+      {
+        $pull: { FavoriteMovies: req.params.MovieID },
+      },
+      { new: true }, // This line makes sure that the updated document is returned
+      (err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Error: " + err);
+        } else {
+          res.json(updatedUser);
+        }
+      }
+    );
+  }
+);
+
+//Remove an existing user
+/**
+ * DELETE request to the /users/:Username endpoint to remove existing user.
+ * @method DELETE
+ * @param {string} URL
+ * @example /users/testuser104
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {string} A text message: '[Username] has been deregistered'.
+ */
+app.delete(
+  "/users/:Username",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.findOneAndRemove({ Username: req.params.Username })
+      .then((user) => {
+        if (!user) {
+          res.status(400).send(req.params.Username + " was not found");
+        } else {
+          res.status(200).send(req.params.Username + " was deleted.");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
+
+// set up the server
+const port = process.env.PORT || 8080;
+app.listen(port, "0.0.0.0", () => {
+  console.log("listening on Port " + port);
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#DELETE">DELETE</a></li><li><a href="global.html#GET">GET</a></li><li><a href="global.html#POST">POST</a></li><li><a href="global.html#PUT">PUT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Mar 03 2022 13:13:05 GMT+0100 (West Africa Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
