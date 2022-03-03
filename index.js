@@ -1,3 +1,19 @@
+/**
+ * @file The index file creates the Express application, sets up the server and implements routes to Api
+ * endpoints used to access myFunFlix data. Requests made to these endpoints use mongoose models created in the
+ * models file and are authenticated using strategies implemented in the passport file. The connect method
+ * establishes a connection between mongoose and the database, which is hosted on MongoDB Atlas. The
+ * server and endpoints are hosted on Heroku.
+ * @requires mongoose Connects the app to the database and implements data schemas using models.
+ * @requires './models.js' The file where data schemas and models are defined.
+ * @requires express Used to create an express application.
+ * @requires morgan Used to log requests made to the database.
+ * @requires passport Used to create strategies for authenticating and authorising requests to the Api endpoints.
+ * @requires './auth.js' The file that implements the user login route.
+ * @requires cors Used to control origins from which requests to the server can be made.
+ * @requires express-validator Used to perform validation on data provided when creating or updating a user.
+ */
+
 const express = require("express"),
   morgan = require("morgan"),
   bodyParser = require("body-parser"),
@@ -28,12 +44,15 @@ mongoose.connect(
 //   useUnifiedTopology: true
 // });
 
+// Use the express function to create the app
 const app = express();
 
+// Use morgan to log requests
 app.use(morgan("common"));
 app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 
+// Implement cors to allow requests from allowed origins
 const cors = require("cors");
 
 // set up whitelist for cors and check against it
@@ -47,17 +66,6 @@ const allowedOrigins = [
   "https://cocoflosbach.github.io",
 ];
 
-/* const allowedMethods = ["GET", "POST", "DELETE", "PUT"];
-const allowedHeaders = [
-  "X-API-KEY",
-  "Origin",
-  "X-Requested-With",
-  "Content-Type",
-  "accept",
-  "Acces-Control-Request-Method",
-  "Authorization",
-]; */
-
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -70,31 +78,12 @@ app.use(
       }
       return callback(null, true);
     },
-    /* methods: (methods, callback) => {
-      if (!methods) return callback(null, true);
-      if (allowedMethods.indexOf(methods) === -1) {
-        let message =
-          "The CORS policy for this application does not allow access from method" +
-          methods;
-        return callback(new Error(message), false);
-      }
-      return callback(null, true);
-    },
-    headers: (headers, callback) => {
-      if (!headers) return callback(null, true);
-      if (allowedHeaders.indexOf(headers) === -1) {
-        let message =
-          "The CORS policy for this application does not allow access from header" +
-          headers;
-        return callback(new Error(message), false);
-      }
-      return callback(null, true);
-    }, */
   })
 );
 
 let auth = require("./auth")(app);
 
+// call passport file where strategies are implemented
 const passport = require("passport");
 require("./passport");
 
@@ -102,7 +91,38 @@ const { check, validationResult } = require("express-validator");
 
 app.use(express.static("public"));
 
+/**
+ * API endpoints. Example request and response bodies are provided in the documentation.html file.
+ */
+
+/**
+ * All http requests in express take a callback function as a parameter.
+ * The function in turn takes the request and response objects as parameters,
+ * which can then be used to access the data associated with the request.
+ * This callback type will be named: 'requestCallback'.
+ * @callback requestCallback
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+
+/**
+ * Some endpoints are protected. The second parameter of requests made to these endpoints invokes a named
+ * authentication strategy. If authentication succeeds, the authenticated user's token is attached to the request
+ * object and the request callback is called. This callback type will be named: 'authenticationCallback'.
+ * @callback authenticationCallback
+ * @param {string} strategy - the name of the passport strategy used.
+ * @param {Object} config - configuration object. Used here to specify that sessions are not used.
+ */
+
 //Get a list of all movies
+/**
+ * GET request to the ('/movies') endpoint to return a list of all movies.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {array} An array containing individual movie objects.
+ */
 app.get(
   "/movies",
   passport.authenticate("jwt", { session: false }),
@@ -118,11 +138,25 @@ app.get(
   }
 );
 
+/**
+ * GET request to the landing page ('/') endpoint.
+ * @method GET
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {string} The welcome message.
+ */
 app.get("/", (req, res) => {
   res.send("Welcome to the MyFlix app API!");
 });
 
 // Add new movie
+/**
+ * POST request to the /movies endpoint to create a new movie document in the datatbase.
+ * @method POST
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {Object} An object containing the new movie record.
+ */
 
 app.post(
   "/movies",
@@ -168,6 +202,14 @@ app.post(
 );
 
 // Get a movie by title
+/**
+ * GET request to the enpoint ('/movies/:Title') to return a movie by Title.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {object} The specified movie record in the database.
+ */
 app.get(
   "/movies/:Title",
   passport.authenticate("jwt", { session: false }),
@@ -184,6 +226,14 @@ app.get(
 );
 
 //Get a list of all genres
+/**
+ * GET request to the ('/genre') endpoint.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {array} An array of objects listing genre names and descriptions.
+ */
 app.get(
   "/genre",
   passport.authenticate("jwt", { session: false }),
@@ -200,6 +250,14 @@ app.get(
 );
 
 // Get genre by name
+/**
+ * GET request to the ('/genre/:Name') endpoint to get one particular genre by name.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {object} An object listing the specified genre name and description.
+ */
 app.get(
   "/genre/:Name",
   passport.authenticate("jwt", { session: false }),
@@ -216,6 +274,14 @@ app.get(
 );
 
 //Get a list of all directors
+/**
+ * GET request to the ('/directors') endpoint.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {array} An array of objects listing director names and Bio desciptions.
+ */
 app.get(
   "/directors",
   passport.authenticate("jwt", { session: false }),
@@ -232,6 +298,14 @@ app.get(
 );
 
 //Get director by name
+/**
+ * GET request to the ('/directors/:Name') endpoint to get one particular genre by name.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {object} An object listing the specified director's name and bio.
+ */
 app.get(
   "/directors/:Name",
   passport.authenticate("jwt", { session: false }),
@@ -248,6 +322,14 @@ app.get(
 );
 
 //Add a user
+// Add new movie
+/**
+ * POST request to the /users endpoint to create a new user document in the datatbase.
+ * @method POST
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {Object} An object containing the new user record.
+ */
 app.post(
   "/users",
   [
@@ -297,6 +379,13 @@ app.post(
 );
 
 // Get all users
+/**
+ * GET request to the ('/users') endpoint to return a list of all users.
+ * @method GET
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {array} An array containing individual user objects.
+ */
 app.get(
   "/users",
   passport.authenticate("jwt", { session: false }),
@@ -313,6 +402,14 @@ app.get(
 );
 
 //Get a user by username
+/**
+ * GET request to the ('/users/:Username') endpoint to get one particular user by username.
+ * @method GET
+ * @param {string} URL
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {object} An object listing the specified user's information.
+ */
 app.get(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
@@ -328,18 +425,16 @@ app.get(
   }
 );
 
-// Update a user's info, by username
-/* We’ll expect JSON in this format
-{
-  Username: String,
-  (required)
-  Password: String,
-  (required)
-  Email: String,
-  (required)
-  Birthday: Date
-}*/
-
+/**
+ * PUT request to the /users/:Username endpoint to update the user's details.
+ * @method PUT
+ * @param {string} URL
+ * @example /users/testuser104
+ * @param {object} validationChain Series of checks that validate specified fields in the request body.
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {Object} An object containing the updated user record.
+ */
 app.put(
   "/users/:Username",
   [
@@ -386,6 +481,16 @@ app.put(
 );
 
 //Add a movie to a user's list of favorites
+/**
+ * POST request to the /users/:Username/movies/:MovieID endpoint
+ * to add a movie to a user's list of Favorite movies.
+ * @method PUT
+ * @param {string} URL
+ * @example /users/testuser104/movies/60a110a28e923350a5340b06
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {Object} An array with the user's updated favourite movies.
+ */
 app.post(
   "/users/:Username/movies/:MovieID",
   passport.authenticate("jwt", { session: false }),
@@ -408,7 +513,17 @@ app.post(
   }
 );
 
-//Remove a movie to a user's list of favorites
+//Remove a movie from a user's list of favorites
+/**
+ * DELETE request to the /users/:Username/movies/:MovieID endpoint to
+ * remove a movie from a user's list of Favorite movies.
+ * @method DELETE
+ * @param {string} URL
+ * @example /users/testuser104/movies/60a110a28e923350a5340b06
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {string} An array with the user's updated favourite movies.
+ */
 app.delete(
   "/users/:Username/movies/:MovieID",
   passport.authenticate("jwt", { session: false }),
@@ -432,6 +547,15 @@ app.delete(
 );
 
 //Remove an existing user
+/**
+ * DELETE request to the /users/:Username endpoint to remove existing user.
+ * @method DELETE
+ * @param {string} URL
+ * @example /users/testuser104
+ * @param {authenticationCallback}
+ * @param {requestCallback}
+ * @returns {string} A text message: '[Username] has been deregistered'.
+ */
 app.delete(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
@@ -456,10 +580,7 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
-/*app.listen(8082, () => {
-  console.log("Your app is listening on port 8082.");
-});*/
-
+// set up the server
 const port = process.env.PORT || 8080;
 app.listen(port, "0.0.0.0", () => {
   console.log("listening on Port " + port);
