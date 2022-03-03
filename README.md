@@ -23,6 +23,16 @@ single movie by title to the user
 
 myFunFlix movie API is hosted [here](https://my-flix-2406.herokuapp.com).
 
+## Technologies
+
+- Node
+- Express
+- Mongoose
+- Passport
+- jsonwebtoken
+- MongoDB Atlas
+- Heroku
+
 
 ## Check out the documentation for this app
 
