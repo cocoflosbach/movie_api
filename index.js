@@ -27,7 +27,7 @@ const Directors = Models.Director;
 const Genre = Models.Genre;
 
 mongoose.connect(
-  "mongodb+srv://new-user-01:CocolocoDB4eva@cocoflosbachdb.zynrz.mongodb.net/myFlixDB?retryWrites=true&w=majority",
+  "mongodb+srv://new-user-01:H3GoK3PzTljTRaw9@cocoflosbachdb.zynrz.mongodb.net/myFlixDB?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
