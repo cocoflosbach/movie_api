@@ -19,10 +19,6 @@ single movie by title to the user
 - Allow users to remove a movie from their list of favorites
 - Allow existing users to deregister
 
-## Live website
-
-myFunFlix movie API is hosted [here](https://my-flix-2406.herokuapp.com).
-
 ## Technologies
 
 - Node
@@ -32,12 +28,6 @@ myFunFlix movie API is hosted [here](https://my-flix-2406.herokuapp.com).
 - jsonwebtoken
 - MongoDB Atlas
 - Heroku
-
-
-## Check out the documentation for this app
-
-Visit myFunFlix movie API documentation page [here](https://my-flix-2406.herokuapp.com/documentation.html) for more details on the API endpoints!
-
 
 ## Author
 
